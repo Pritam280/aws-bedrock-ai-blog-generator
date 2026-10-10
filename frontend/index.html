@@ -1,0 +1,849 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <title>BlogCraft AI | AWS Bedrock</title>
+
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a2e;
+      --panel-light: #18233a;
+      --border: #283650;
+      --text: #edf2ff;
+      --muted: #94a3bd;
+      --accent: #8b7cff;
+      --accent-light: #b1a7ff;
+      --green: #54d6a0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 15% 0%, #252052 0, transparent 38%),
+        radial-gradient(ellipse at 100% 20%, #102c46 0, transparent 32%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    button, textarea {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1180px, 92%);
+      margin: auto;
+    }
+
+    header {
+      border-bottom: 1px solid rgba(148, 163, 189, 0.15);
+      background: rgba(11, 16, 32, 0.72);
+    }
+
+    .navbar {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 19px;
+      font-weight: 750;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-icon {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #8b7cff, #4b9cff);
+      font-size: 23px;
+      box-shadow: 0 7px 25px #7868ff30;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px #54d6a070;
+    }
+
+    main {
+      padding: 64px 0 48px;
+    }
+
+    .hero {
+      max-width: 780px;
+      margin: 0 auto 42px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border: 1px solid #8b7cff45;
+      border-radius: 50px;
+      background: #8b7cff12;
+      color: var(--accent-light);
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 22px 0 16px;
+      font-size: clamp(36px, 5.5vw, 59px);
+      line-height: 1.12;
+      letter-spacing: -2px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(100deg, #b7a9ff, #7ccaff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 600px;
+      margin: auto;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(250px, 0.85fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: rgba(18, 26, 46, 0.88);
+      box-shadow: 0 20px 60px #00000015;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header h2 {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .panel-header p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pill {
+      padding: 5px 10px;
+      border: 1px solid #8b7cff40;
+      border-radius: 30px;
+      background: #8b7cff12;
+      color: var(--accent-light);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .form-body {
+      padding: 24px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 155px;
+      padding: 17px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      outline: none;
+      background: #0c1325;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.7;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea::placeholder {
+      color: #687894;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px #8b7cff18;
+    }
+
+    .input-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .generate-btn {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 22px;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(100deg, #8170ff, #588fff);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .generate-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+
+    .generate-btn:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
+    .privacy-note {
+      margin-top: 15px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .status {
+      display: none;
+      margin-top: 18px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #0c1325;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .status.success {
+      display: block;
+      border-color: #54d6a050;
+      color: var(--green);
+    }
+
+    .status.error {
+      display: block;
+      border-color: #ff7b8750;
+      color: #ff9da5;
+    }
+
+    .status.loading {
+      display: block;
+      border-color: #8b7cff55;
+      color: var(--accent-light);
+    }
+
+    .result-panel {
+      margin-top: 22px;
+    }
+
+    .result-body {
+      min-height: 210px;
+      padding: 24px;
+    }
+
+    .empty-state {
+      display: flex;
+      min-height: 160px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .empty-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--panel-light);
+      font-size: 24px;
+    }
+
+    .empty-state h3 {
+      margin-bottom: 5px;
+      font-size: 15px;
+    }
+
+    .empty-state p {
+      max-width: 300px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    #result {
+      color: #dbe4f6;
+      font-size: 14px;
+      line-height: 1.9;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 24px 22px;
+    }
+
+    .secondary-btn {
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--panel-light);
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .secondary-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .sidebar {
+      display: grid;
+      gap: 18px;
+    }
+
+    .side-card {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: rgba(18, 26, 46, 0.8);
+    }
+
+    .side-title {
+      margin-bottom: 19px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .service {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 17px;
+    }
+
+    .service-icon {
+      display: grid;
+      flex-shrink: 0;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--panel-light);
+      font-size: 19px;
+    }
+
+    .service strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .service span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .step {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .step-number {
+      display: grid;
+      flex-shrink: 0;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: #8b7cff20;
+      color: var(--accent-light);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .step strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .step p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .tip {
+      border-color: #8b7cff40;
+      background: linear-gradient(140deg, #8170ff12, #588fff08);
+    }
+
+    .tip p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    footer {
+      padding: 24px 0 30px;
+      border-top: 1px solid rgba(148, 163, 189, 0.12);
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+    }
+
+    footer strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 800px) {
+      main {
+        padding-top: 42px;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tip {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .container {
+        width: 94%;
+      }
+
+      .navbar {
+        min-height: 68px;
+      }
+
+      .nav-status {
+        font-size: 11px;
+      }
+
+      .brand {
+        font-size: 16px;
+      }
+
+      .brand-icon {
+        width: 37px;
+        height: 37px;
+      }
+
+      h1 {
+        letter-spacing: -1.2px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .panel-header,
+      .form-body,
+      .result-body {
+        padding: 18px;
+      }
+
+      .sidebar {
+        grid-template-columns: 1fr;
+      }
+
+      .result-actions {
+        padding: 0 18px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container navbar">
+      <div class="brand">
+        <div class="brand-icon">✦</div>
+        <div>
+          BlogCraft AI
+          <small>Powered by AWS</small>
+        </div>
+      </div>
+
+      <div class="nav-status">
+        <span class="dot"></span>
+        AI Blog Studio
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="eyebrow">✦ Generative AI · Serverless</div>
+      <h1>
+        Turn your ideas into<br>
+        <span class="gradient-text">amazing blogs.</span>
+      </h1>
+      <p>
+        Transform any topic into engaging blog content with AI.
+        Write your idea, generate your blog, and let your creativity flow.
+      </p>
+    </section>
+
+    <div class="workspace">
+      <section>
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Create a new blog</h2>
+              <p>Start with a topic or an idea</p>
+            </div>
+            <span class="pill">AI WRITER</span>
+          </div>
+
+          <div class="form-body">
+            <label for="topic">What would you like to write about?</label>
+
+            <textarea
+              id="topic"
+              maxlength="2000"
+              placeholder="Example: The future of cloud computing, its benefits, challenges, and how businesses use AWS..."
+            ></textarea>
+
+            <div class="input-footer">
+              <span>Be specific for better results</span>
+              <span id="charCount">0 / 2000</span>
+            </div>
+
+            <button
+              class="generate-btn"
+              id="generateBtn"
+              type="button"
+              onclick="generateBlog()"
+            >
+              <span>✦</span>
+              <span id="buttonText">Generate my blog</span>
+              <span>→</span>
+            </button>
+
+            <p class="privacy-note">
+              Powered by Amazon Bedrock and Meta Llama 3.1
+            </p>
+
+            <div id="status" class="status" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="panel result-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Your generated blog</h2>
+              <p>Your AI-generated content will appear here</p>
+            </div>
+            <span class="pill">OUTPUT</span>
+          </div>
+
+          <div class="result-body">
+            <div id="emptyState" class="empty-state">
+              <div class="empty-icon">✎</div>
+              <h3>Your next great blog starts here</h3>
+              <p>Enter a topic above and click Generate my blog to create your content.</p>
+            </div>
+
+            <div id="result" hidden></div>
+          </div>
+
+          <div id="resultActions" class="result-actions" hidden>
+            <button
+              class="secondary-btn"
+              type="button"
+              onclick="copyBlog()"
+            >
+              Copy blog text
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="side-card">
+          <h2 class="side-title">Powered by AWS</h2>
+
+          <div class="service">
+            <div class="service-icon">🧠</div>
+            <div>
+              <strong>Amazon Bedrock</strong>
+              <span>AI content generation</span>
+            </div>
+          </div>
+
+          <div class="service">
+            <div class="service-icon">λ</div>
+            <div>
+              <strong>AWS Lambda</strong>
+              <span>Serverless processing</span>
+            </div>
+          </div>
+
+          <div class="service">
+            <div class="service-icon">⇄</div>
+            <div>
+              <strong>API Gateway</strong>
+              <span>HTTP API integration</span>
+            </div>
+          </div>
+
+          <div class="service">
+            <div class="service-icon">▤</div>
+            <div>
+              <strong>Amazon S3</strong>
+              <span>Website and blog storage</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <h2 class="side-title">How it works</h2>
+
+          <div class="step">
+            <div class="step-number">01</div>
+            <div>
+              <strong>Enter a topic</strong>
+              <p>Describe the blog you want to create.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">02</div>
+            <div>
+              <strong>Generate with AI</strong>
+              <p>Lambda sends your request to Bedrock.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">03</div>
+            <div>
+              <strong>View your blog</strong>
+              <p>Read the generated content and copy it.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card tip">
+          <h2 class="side-title">✦ Pro tip</h2>
+          <p>
+            Include your target audience, writing style, and key points
+            in your topic to help guide the generated content.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    Built with <strong>Amazon Bedrock</strong>, AWS Lambda, API Gateway
+    and Amazon S3.
+    <br>
+    AI-generated content may need review before publication.
+  </footer>
+
+  <script>
+    // Keep the existing API Gateway endpoint unchanged.
+    const API_URL =
+      "https://mfvelen6fk.execute-api.us-east-1.amazonaws.com/dev/blog-generation";
+
+    const topicInput = document.getElementById("topic");
+    const status = document.getElementById("status");
+    const result = document.getElementById("result");
+    const emptyState = document.getElementById("emptyState");
+    const button = document.getElementById("generateBtn");
+    const buttonText = document.getElementById("buttonText");
+    const resultActions = document.getElementById("resultActions");
+    const charCount = document.getElementById("charCount");
+
+    let generatedBlog = "";
+
+    topicInput.addEventListener("input", () => {
+      charCount.textContent = `${topicInput.value.length} / 2000`;
+    });
+
+    topicInput.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        generateBlog();
+      }
+    });
+
+    function showStatus(message, type) {
+      status.textContent = message;
+      status.className = `status ${type}`;
+    }
+
+    async function generateBlog() {
+      const topic = topicInput.value.trim();
+
+      if (!topic) {
+        showStatus("Please enter a topic first.", "error");
+        topicInput.focus();
+        return;
+      }
+
+      button.disabled = true;
+      buttonText.textContent = "Generating your blog...";
+      showStatus("Your AI blog is being generated. Please wait...", "loading");
+
+      result.textContent = "";
+      result.hidden = true;
+      emptyState.hidden = true;
+      resultActions.hidden = true;
+      generatedBlog = "";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            blog_topic: topic
+          })
+        });
+
+        let data;
+
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error(
+            `The API returned an invalid response (HTTP ${response.status}).`
+          );
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || `Request failed with HTTP ${response.status}.`
+          );
+        }
+
+        if (typeof data.blog !== "string" || !data.blog.trim()) {
+          throw new Error("The API did not return a blog.");
+        }
+
+        generatedBlog = data.blog;
+        result.textContent = generatedBlog;
+        result.hidden = false;
+        resultActions.hidden = false;
+
+        showStatus("✓ Blog generated successfully!", "success");
+      } catch (error) {
+        emptyState.hidden = false;
+
+        showStatus(
+          "Request failed: " + error.message +
+          " Check the API URL, CORS settings, Lambda logs, and API Gateway logs.",
+          "error"
+        );
+
+        console.error("Blog generation error:", error);
+      } finally {
+        button.disabled = false;
+        buttonText.textContent = "Generate my blog";
+      }
+    }
+
+    async function copyBlog() {
+      if (!generatedBlog) return;
+
+      try {
+        await navigator.clipboard.writeText(generatedBlog);
+        showStatus("✓ Blog text copied to clipboard.", "success");
+      } catch (error) {
+        showStatus(
+          "Unable to copy automatically. Select the blog text and copy it manually.",
+          "error"
+        );
+      }
+    }
+  </script>
+</body>
+</html>
